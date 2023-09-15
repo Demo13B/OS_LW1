@@ -13,7 +13,12 @@ auto main() -> int
 
     // Forking the process
     int id = fork();
-    if (id == 0)
+    if (id == -1)
+    {
+        std::cerr << "Could not fork a process";
+        return 2;
+    }
+    else if (id == 0)
     {
         close(fd[1]);
         int received;
@@ -24,7 +29,7 @@ auto main() -> int
             if (status == -1)
             {
                 std::cerr << "Could not read from pipe\n";
-                return 2;
+                return 3;
             }
             sum += received;
             status = read(fd[0], &received, sizeof(int));
@@ -41,7 +46,7 @@ auto main() -> int
             if (write(fd[1], &number, sizeof(int)) == -1)
             {
                 std::cerr << "Could not write into pipe\n";
-                return 3;
+                return 4;
             }
         }
         close(fd[1]);

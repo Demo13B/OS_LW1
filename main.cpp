@@ -17,23 +17,32 @@ auto main() -> int
     {
         close(fd[1]);
         int y;
-        if (read(fd[0], &y, sizeof(typeof(y))) == -1)
+        int status = read(fd[0], &y, sizeof(typeof(y)));
+        std::cout << "Numbers from parent: ";
+        while (status != 0)
         {
-            std::cerr << "Could not read from pipe\n";
-            return 2;
+            if (status == -1)
+            {
+                std::cerr << "Could not read from pipe\n";
+                return 2;
+            }
+            std::cout << y << " ";
+            status = read(fd[0], &y, sizeof(typeof(y)));
         }
         close(fd[0]);
-        std::cout << "Received form parent: " << y << std::endl;
+        std::cout << std::endl;
     }
     else
     {
         close(fd[0]);
-        int x;
-        std::cin >> x;
-        if (write(fd[1], &x, sizeof(typeof(x))) == -1)
+        int number;
+        while (std::cin >> number)
         {
-            std::cerr << "Could not write into pipe\n";
-            return 3;
+            if (write(fd[1], &number, sizeof(int)) == -1)
+            {
+                std::cerr << "Could not write into pipe\n";
+                return 3;
+            }
         }
         close(fd[1]);
     }

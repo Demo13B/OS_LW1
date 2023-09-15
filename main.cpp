@@ -16,9 +16,9 @@ auto main() -> int
     if (id == 0)
     {
         close(fd[1]);
-        int y;
-        int status = read(fd[0], &y, sizeof(typeof(y)));
-        std::cout << "Numbers from parent: ";
+        int received;
+        int status = read(fd[0], &received, sizeof(int));
+        int sum = 0;
         while (status != 0)
         {
             if (status == -1)
@@ -26,11 +26,11 @@ auto main() -> int
                 std::cerr << "Could not read from pipe\n";
                 return 2;
             }
-            std::cout << y << " ";
-            status = read(fd[0], &y, sizeof(typeof(y)));
+            sum += received;
+            status = read(fd[0], &received, sizeof(int));
         }
         close(fd[0]);
-        std::cout << std::endl;
+        std::cout << "The sum of numbers is: " << sum << std::endl;
     }
     else
     {

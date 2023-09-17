@@ -13,17 +13,18 @@ auto main() -> int
 
     // Forking the process
     int id = fork();
-    if (id == -1)
+    if (id == -1) // fork error
     {
         std::cerr << "Could not fork a process";
         return 2;
     }
-    else if (id == 0)
+    else if (id == 0) // child process
     {
         close(fd[1]);
         int received;
         int status = read(fd[0], &received, sizeof(int));
         int sum = 0;
+
         while (status != 0)
         {
             if (status == -1)
@@ -31,16 +32,19 @@ auto main() -> int
                 std::cerr << "Could not read from pipe\n";
                 return 3;
             }
+
             sum += received;
             status = read(fd[0], &received, sizeof(int));
         }
+
         close(fd[0]);
         std::cout << "The sum of numbers is: " << sum << std::endl;
     }
-    else
+    else // parent process
     {
         close(fd[0]);
         int number;
+
         while (std::cin >> number)
         {
             if (write(fd[1], &number, sizeof(int)) == -1)
@@ -49,6 +53,7 @@ auto main() -> int
                 return 4;
             }
         }
+
         close(fd[1]);
     }
 

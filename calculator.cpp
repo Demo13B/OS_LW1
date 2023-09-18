@@ -11,7 +11,6 @@ auto main() -> int
 
     while (read(STDIN_FILENO, &received, sizeof(received)) != 0)
     {
-        output << "I read from parent to child: " << received << "\n";
         sum += std::stoi(received);
     }
 

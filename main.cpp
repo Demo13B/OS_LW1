@@ -23,7 +23,7 @@ auto main() -> int
         close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         execlp("./calculator", "./calculator", NULL);
-        std::cerr << "Failed to run child";
+        std::cerr << "Failed to excute child";
         return 3;
     }
     else // parent process
@@ -33,8 +33,6 @@ auto main() -> int
 
         while (std::cin >> number)
         {
-
-            std::cout << "I read from user to parent: " << number << "\n";
             if (write(fd[1], &number, sizeof(number)) == -1)
             {
                 std::cerr << "Could not write into pipe\n";

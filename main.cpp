@@ -21,39 +21,24 @@ auto main() -> int
     else if (id == 0) // child process
     {
         close(fd[1]);
-        int received;
-        int status = read(fd[0], &received, sizeof(int));
-        int sum = 0;
-
-        while (status != 0)
-        {
-            if (status == -1)
-            {
-                std::cerr << "Could not read from pipe\n";
-                return 3;
-            }
-
-            sum += received;
-            status = read(fd[0], &received, sizeof(int));
-        }
-
-        close(fd[0]);
-        std::cout << "The sum of numbers is: " << sum << std::endl;
+        dup2(fd[0], STDIN_FILENO);
+        execlp("./calculator", "./calculator", NULL);
+        std::cerr << "Failed to excute child";
+        return 3;
     }
     else // parent process
     {
         close(fd[0]);
-        int number;
+        std::string number;
 
         while (std::cin >> number)
         {
-            if (write(fd[1], &number, sizeof(int)) == -1)
+            if (write(fd[1], &number, sizeof(number)) == -1)
             {
                 std::cerr << "Could not write into pipe\n";
                 return 4;
             }
         }
-
         close(fd[1]);
     }
 

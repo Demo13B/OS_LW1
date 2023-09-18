@@ -20,8 +20,7 @@ auto main() -> int
     }
     else if (id == 0) // child process
     {
-        int status;
-        waitpid(getppid(), &status, 0);
+        close(fd[1]);
         dup2(fd[0], STDIN_FILENO);
         execlp("./calculator", "./calculator", NULL);
         std::cerr << "Failed to run child";
@@ -29,6 +28,7 @@ auto main() -> int
     }
     else // parent process
     {
+        close(fd[0]);
         std::string number;
 
         while (std::cin >> number)

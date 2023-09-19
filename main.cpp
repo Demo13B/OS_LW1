@@ -1,11 +1,10 @@
 #include <unistd.h>
-#include <iostream>
+#include <string>
 
 auto main() -> int {
     int fd[2];  // fd[0] - read; fd[1] - write
     // Creating pipe and checking that it was created
     if (pipe(fd) == -1) {
-        std::cerr << "Pipe creation failed\n";
         return 1;
     }
 
@@ -13,7 +12,6 @@ auto main() -> int {
     int id = fork();
 
     if (id == -1) {  // fork error
-        std::cerr << "Could not fork a process";
         return 2;
     } else if (id == 0) {  // child process
         close(fd[1]);
@@ -21,7 +19,6 @@ auto main() -> int {
 
         execlp("./calculator", "./calculator", NULL);
 
-        std::cerr << "Failed to excute child\n";
         return 3;
     } else {  // parent process
         close(fd[0]);
@@ -29,30 +26,26 @@ auto main() -> int {
         char c;
 
         if (read(STDIN_FILENO, &c, sizeof(char)) == -1) {
-            std::cerr << "Could not read from stdin\n";
             return 4;
         }
 
-        while (c != '\n') {  // while no newline character
-            if (c == ' ') {  // number finished
+        while (c != '\n') {
+            if (c == ' ') {
                 if (write(fd[1], &number, sizeof(number)) == -1) {
-                    std::cerr << "Could not write into pipe\n";
                     return 5;
                 }
                 number = "";
-            } else {  // new digit
+            } else {
                 number += c;
             }
 
             if (read(STDIN_FILENO, &c, sizeof(char)) == -1) {
-                std::cerr << "Could not read from stdin\n";
                 return 4;
             }
         }
 
         if (number != "") {
             if (write(fd[1], &number, sizeof(number)) == -1) {
-                std::cerr << "Could not write into pipe\n";
                 return 5;
             }
         }

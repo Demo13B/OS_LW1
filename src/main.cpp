@@ -1,3 +1,4 @@
+#include <sys/wait.h>
 #include <unistd.h>
 #include <string>
 
@@ -51,6 +52,12 @@ auto main() -> int {
         }
 
         close(fd[1]);
+
+        int status;
+        waitpid(0, &status, 0);  // waiting for child process to finish
+
+        if (status != 0)
+            return -1;
     }
 
     return 0;
